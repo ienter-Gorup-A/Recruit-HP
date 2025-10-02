@@ -335,7 +335,7 @@ border-radius: inherit; animation: morphing 20s ease-in-out infinite;
     line-height: 1.6; color: var(--brand-beige); position: relative; z-index: 1;
 }
 .message-box p { 
-    font-size: clamp(1.0rem, 3.2vw, 1.2rem); 
+    font-size: clamp(1.0rem, 3vw, 1.2rem); 
     line-height: 1.8; 
     margin-top: 20px; 
     color: var(--brand-beige); 
@@ -401,7 +401,7 @@ border-radius: inherit; animation: morphing 20s ease-in-out infinite;
     left: -5%;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
     backdrop-filter: blur(5px);
-    animation: morphing 20s ease-in-out infinite;
+    animation: morphing 8s ease-in-out infinite;
     border-radius: 30% 70% 40% 60% / 60% 40% 60% 40%;
 }
 #interview-card .section-title .sub-title-in-h2 {
@@ -516,7 +516,7 @@ border-radius: inherit; animation: morphing 20s ease-in-out infinite;
     #profile-card .card-background::before {
         display: block;
         background: linear-gradient(135deg, rgba(60, 60, 60, 0.3) 0%, rgba(60, 60, 60, 0.3) 100%);
-        animation: morphing 20s ease infinite;
+        animation: morphing 20s ease-in-out infinite;
         border-radius: 50px;
         width: 100%;
         height: 90%;
@@ -541,7 +541,12 @@ border-radius: inherit; animation: morphing 20s ease-in-out infinite;
     color: var(--brand-beige); 
     font-weight: 500; 
 }
-.job-listing { border-top: 1px solid rgba(232, 223, 223, 0.4); padding: 20px 0; position: relative; z-index: 1; }
+.job-listing { 
+    border-top: 1px solid rgba(232, 223, 223, 0.4); 
+    padding: 20px 0; 
+    position: relative; 
+    z-index: 20; /* 增加 z-index 以確保它覆蓋下一個 job-listing 的浮層 */
+}
 .job-listing:last-child { border-bottom: 1px solid rgba(232, 223, 223, 0.4); }
 .job-header { 
     display: flex; 
@@ -598,7 +603,7 @@ border-radius: inherit; animation: morphing 20s ease-in-out infinite;
 }
 #entry-card .card-background::before {
     background: linear-gradient(135deg, rgba(60, 60, 60, 0.3) 0%, rgba(60, 60, 60, 0.3) 100%);
-    animation-duration: 15s;
+    animation-duration: 20s;
     animation-delay: 1s;
 }
 .entry-box {
@@ -1108,3 +1113,153 @@ border-radius: inherit; animation: morphing 20s ease-in-out infinite;
         margin-bottom: -40vh;
     }
 }
+
+/* --- 新增的 PC 端浮層樣式開始 --- */
+
+/* PC端限定浮層樣式 */
+@media (min-width: 769px) {
+    .job-listing {
+        position: relative; /* 確保浮層基於此定位 */
+        overflow: visible; /* 允許內容溢出 */
+        z-index: 20; /* 確保 job-listing 自身的層級，以便浮層覆蓋下一個 job-listing 的內容 */
+    }
+	/* 新增：用於提升當前激活的 job-listing 層級 (解決遮擋問題) */
+    .job-listing.is-active-popup {
+        z-index: 100; /* 極高值，確保覆蓋所有同級元素 */
+    }
+
+    .job-popup-trigger {
+        cursor: pointer; /* 提供點擊提示 */
+        position: relative;
+        transition: color 0.2s ease;
+    }
+
+    .job-popup-trigger:hover {
+        color: var(--brand-red); /* 點擊時的視覺回饋 */
+    }
+
+    /* 浮層初始狀態：隱藏且不佔空間 */
+    .job-detail-popup {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-height: 100%; /* 確保能完全覆蓋 job-listing 區域 */
+        background: linear-gradient(135deg, rgba(203, 10, 29, 0.95) 0%, rgba(161, 8, 24, 0.95) 100%);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 50; /* 高於 job-listing 內容，實現遮擋 */
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(20px);
+        transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+    }
+
+    /* 浮層展開狀態 */
+    .job-detail-popup.is-open {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    
+    .popup-inner {
+        padding: 30px;
+        color: var(--brand-beige);
+        position: relative;
+    }
+
+    .popup-close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: var(--brand-beige);
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.2s ease, transform 0.2s ease;
+        z-index: 51; 
+    }
+
+    .popup-close-btn:hover {
+        color: #ffffff;
+        transform: rotate(90deg);
+    }
+    
+    .popup-title {
+        font-family: 'Noto Sans JP', sans-serif; font-weight: 900;
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        margin-top: 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid rgba(232, 223, 223, 0.5);
+        margin-bottom: 20px;
+    }
+
+    .popup-content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2欄佈局 */
+        gap: 20px;
+    }
+
+    .content-block {
+        padding: 15px;
+        background-color: var(--deep-gray); /* 改為深灰色 */
+        border-radius: 5px;
+        border: 1px solid rgba(232, 223, 223, 0.2);
+    }
+    
+    .content-block h5 {
+        font-family: 'Noto Sans JP', sans-serif; font-weight: 700;
+        font-size: 1.1rem;
+        color: #ffffff;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    .content-block ul {
+        list-style: disc;
+        padding-left: 20px;
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    .content-block p {
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    .content-block p strong {
+        color: #ffffff;
+    }
+    
+    .content-block .small-text {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+
+    .content-block .mt-10 {
+        margin-top: 10px;
+    }
+}
+
+/* 手機端樣式調整：確保手機端隱藏此功能 */
+@media (max-width: 768px) {
+    .job-detail-popup {
+        display: none !important;
+    }
+    .job-popup-trigger {
+        cursor: default; /* 移除手機端點擊手勢 */
+    }
+    
+    /* 確保手機端按鈕回到原狀，不受PC端樣式影響 */
+    .job-listing .job-detail-btn {
+        transform: none !important; 
+    }
+}
+/* --- 新增的 PC 端浮層樣式結束 --- */
